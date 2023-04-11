@@ -1,0 +1,6 @@
+Welcome to ngNOS!
+
+You can change this banner using "set system login banner post-login" command.
+
+ngNOS is a free software distribution that includes multiple components,
+you can check individual component licenses under /usr/share/doc/*/copyright
