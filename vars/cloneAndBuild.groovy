@@ -31,7 +31,7 @@ def call(description, architecture, pkgList, buildCmd) {
 
         if (pkgList) {
             // Fetch individual package source code, but only if a URL is defined, this will
-            // let us reuse this script for packages like vyos-1x which ship a Jenkinfile in
+            // let us reuse this script for packages like ngnos-1x which ship a Jenkinfile in
             // their repositories root folder.
             pkgList.each { pkg ->
                 if (pkg.scmUrl && pkg.scmCommit) {

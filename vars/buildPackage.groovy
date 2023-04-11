@@ -55,7 +55,7 @@ def call(description=null, pkgList=null, buildCmd=null, buildArm=false, changesP
                         if (branchName.equals('master'))
                             branchName = 'current'
 
-                        env.DOCKER_IMAGE = 'vyos/vyos-build:' + branchName
+                        env.DOCKER_IMAGE = 'vyos/ngnos-build:' + branchName
 
                         // Get the current UID and GID from the jenkins agent to allow use of the same UID inside Docker
                         env.USR_ID = sh(returnStdout: true, script: 'id -u').toString().trim()
@@ -169,15 +169,15 @@ def call(description=null, pkgList=null, buildCmd=null, buildArm=false, changesP
                         if (getGitBranchName() == "master")
                             RELEASE = 'current'
 
-                        def VYOS_REPO_PATH = '/home/sentrium/web/dev.packages.vyos.net/public_html/repositories/' + RELEASE
+                        def NGNOS_REPO_PATH = '/home/sentrium/web/dev.packages.ngnos.com/public_html/repositories/' + RELEASE
                         if (getGitBranchName() == "crux")
-                            VYOS_REPO_PATH += '/vyos'
+                            NGNOS_REPO_PATH += '/ngnos'
 
                         def SSH_OPTS = '-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=ERROR'
-                        def SSH_REMOTE = env.DEV_PACKAGES_VYOS_NET_HOST // defined as global variable
-                        def SSH_DIR = '~/VyOS/' + RELEASE
+                        def SSH_REMOTE = env.DEV_PACKAGES_NGNOS_NET_HOST // defined as global variable
+                        def SSH_DIR = '~/ngNOS/' + RELEASE
 
-                        sshagent(['SSH-dev.packages.vyos.net']) {
+                        sshagent(['SSH-dev.packages.ngnos.com']) {
 
                             sh(script: "ssh ${SSH_OPTS} ${SSH_REMOTE} -t \"bash --login -c 'mkdir -p ${SSH_DIR}'\"")
 
@@ -188,7 +188,7 @@ def call(description=null, pkgList=null, buildCmd=null, buildArm=false, changesP
                                 echo "Remove deprecated source package(s) from the repository..."
                                 files.each { FILE ->
                                     def PACKAGE = sh(returnStdout: true, script: "cat ${FILE} | grep Source ").trim().tokenize(' ').last()
-                                    sh(script: "ssh ${SSH_OPTS} ${SSH_REMOTE} -t \"uncron-add 'reprepro -v -b ${VYOS_REPO_PATH} removesrc ${RELEASE} ${PACKAGE}'\"")
+                                    sh(script: "ssh ${SSH_OPTS} ${SSH_REMOTE} -t \"uncron-add 'reprepro -v -b ${NGNOS_REPO_PATH} removesrc ${RELEASE} ${PACKAGE}'\"")
                                 }
                             }
 
@@ -202,7 +202,7 @@ def call(description=null, pkgList=null, buildCmd=null, buildArm=false, changesP
                                     def ARCH = ''
                                     if (PACKAGE_ARCH != 'all')
                                         ARCH = '-A ' + PACKAGE_ARCH
-                                    sh(script: "ssh ${SSH_OPTS} ${SSH_REMOTE} -t \"uncron-add 'reprepro -v -b ${VYOS_REPO_PATH} ${ARCH} remove ${RELEASE} ${PACKAGE}'\"")
+                                    sh(script: "ssh ${SSH_OPTS} ${SSH_REMOTE} -t \"uncron-add 'reprepro -v -b ${NGNOS_REPO_PATH} ${ARCH} remove ${RELEASE} ${PACKAGE}'\"")
                                 }
                             }
 
@@ -221,7 +221,7 @@ def call(description=null, pkgList=null, buildCmd=null, buildArm=false, changesP
                                     def PACKAGE = sh(returnStdout: true, script: "cat ${FILE} | grep Source ").trim().tokenize(' ').last()
                                     sh(script: "scp ${SSH_OPTS} ${FILE} ${SSH_REMOTE}:${SSH_DIR}")
                                     def FILENAME = FILE.toString().tokenize('/').last()
-                                    sh(script: "ssh ${SSH_OPTS} ${SSH_REMOTE} -t \"uncron-add 'reprepro -v -b ${VYOS_REPO_PATH} includedsc ${RELEASE} ${SSH_DIR}/${FILENAME}'\"")
+                                    sh(script: "ssh ${SSH_OPTS} ${SSH_REMOTE} -t \"uncron-add 'reprepro -v -b ${NGNOS_REPO_PATH} includedsc ${RELEASE} ${SSH_DIR}/${FILENAME}'\"")
                                 }
                             }
 
@@ -239,9 +239,9 @@ def call(description=null, pkgList=null, buildCmd=null, buildArm=false, changesP
                                     // Packages like FRR produce their binary in a nested path e.g. packages/frr/frr-rpki-rtrlib-dbgsym_7.5_arm64.deb,
                                     // thus we will only extract the filename portion from FILE as the binary is scp'ed to SSH_DIR without any subpath.
                                     def FILENAME = FILE.toString().tokenize('/').last()
-                                    sh(script: "ssh ${SSH_OPTS} ${SSH_REMOTE} -t \"uncron-add 'reprepro -v -b ${VYOS_REPO_PATH} ${ARCH} includedeb ${RELEASE} ${SSH_DIR}/${FILENAME}'\"")
+                                    sh(script: "ssh ${SSH_OPTS} ${SSH_REMOTE} -t \"uncron-add 'reprepro -v -b ${NGNOS_REPO_PATH} ${ARCH} includedeb ${RELEASE} ${SSH_DIR}/${FILENAME}'\"")
                                 }
-                                sh(script: "ssh ${SSH_OPTS} ${SSH_REMOTE} -t \"uncron-add 'reprepro -v -b ${VYOS_REPO_PATH} deleteunreferenced'\"")
+                                sh(script: "ssh ${SSH_OPTS} ${SSH_REMOTE} -t \"uncron-add 'reprepro -v -b ${NGNOS_REPO_PATH} deleteunreferenced'\"")
                             }
                         }
                     }

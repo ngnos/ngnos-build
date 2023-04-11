@@ -20,9 +20,9 @@ def call(text = null) {
     // build up the main description text
     def description = ""
     if (text) {
-        description += "<h2>VyOS package build: " + text + "</h2>"
+        description += "<h2>ngNOS package build: " + text + "</h2>"
     } else {
-        description += "<h2>VyOS package build: " + getGitRepoName().replace('.git', '') + "</h2>"
+        description += "<h2>ngNOS package build: " + getGitRepoName().replace('.git', '') + "</h2>"
     }
 
     if (isCustomBuild()) {

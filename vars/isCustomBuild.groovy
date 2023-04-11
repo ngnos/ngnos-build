@@ -16,11 +16,11 @@
 
 def call() {
     // Returns true if this is a custom build launched on any project fork.
-    // Returns false if this is build from git@github.com:vyos/<reponame>.
-    // <reponame> can be e.g. vyos-1x.git or vyatta-op.git
+    // Returns false if this is build from git@github.com:ngnos/<reponame>.
+    // <reponame> can be e.g. ngnos-1x.git or vyatta-op.git
     // GitHub organisation base URL
-    def gitURI = 'git@github.com:vyos/' + getGitRepoName()
-    def httpURI = 'https://github.com/vyos/' + getGitRepoName()
+    def gitURI = 'git@github.com:ngnos/' + getGitRepoName()
+    def httpURI = 'https://github.com/ngnos/' + getGitRepoName()
 
     return !((getGitRepoURL() == gitURI) || (getGitRepoURL() == httpURI)) || isPullRequest()
 }
