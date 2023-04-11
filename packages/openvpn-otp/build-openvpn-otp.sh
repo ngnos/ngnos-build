@@ -28,7 +28,7 @@ mkdir -p usr/lib/openvpn
 cp src/.libs/openvpn-otp.so usr/lib/openvpn
 
 fpm --input-type dir --output-type deb --name openvpn-otp \
-    --maintainer "VyOS Package Maintainers <maintainers@vyos.net>" \
+    --maintainer "ngNOS Package Maintainers <maintainers@ngnos.com>" \
     --description "OpenVPN OTP Authentication support." \
     --depends openvpn --architecture $(dpkg --print-architecture) \
     --version $(git describe --tags --always | cut -c2-) --deb-compression gz usr

@@ -27,5 +27,5 @@ def pkgList = [
      'scmUrl': 'https://github.com/evgeny-gridasov/openvpn-otp',
      'buildCmd': 'cd ..; ./build-openvpn-otp.sh'],
 ]
-// Start package build using library function from https://github.com/vyos/vyos-build
+// Start package build using library function from https://github.com/ngnos/ngnos-build
 buildPackage('openvpn-otp', pkgList, null, true, "**/packages/openvpn-otp/*")
