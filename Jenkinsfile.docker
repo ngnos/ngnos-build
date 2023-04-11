@@ -52,7 +52,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            DOCKER_IMAGE_AMD64 = "vyos/vyos-build:" + env.GIT_BRANCH_NAME
+                            DOCKER_IMAGE_AMD64 = "vyos/ngnos-build:" + env.GIT_BRANCH_NAME
                             sh "docker build --no-cache --tag ${DOCKER_IMAGE_AMD64} docker"
                             if (! isCustomBuild()) {
                                 withDockerRegistry([credentialsId: "DockerHub"]) {
@@ -68,7 +68,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            DOCKER_IMAGE_ARM64 = "vyos/vyos-build:" + env.GIT_BRANCH_NAME + "-arm64"
+                            DOCKER_IMAGE_ARM64 = "vyos/ngnos-build:" + env.GIT_BRANCH_NAME + "-arm64"
                             sh "docker build --no-cache --tag ${DOCKER_IMAGE_ARM64} --build-arg ARCH=arm64v8/ docker"
                             if (! isCustomBuild()) {
                                 withDockerRegistry([credentialsId: "DockerHub"]) {
