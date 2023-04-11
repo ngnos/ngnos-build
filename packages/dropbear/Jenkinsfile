@@ -26,5 +26,5 @@ def pkgList = [
      'buildCmd': 'sudo mk-build-deps --install --tool "apt-get --yes --no-install-recommends"; cd ..; ./build.sh'],
 ]
 
-// Start package build using library function from https://github.com/vyos/vyos-build
+// Start package build using library function from https://github.com/ngnos/ngnos-build
 buildPackage('dropbear', pkgList, null, true, "**/packages/dropbear/*")
