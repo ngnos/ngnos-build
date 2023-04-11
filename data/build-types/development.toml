@@ -4,5 +4,5 @@ packages = [
   "apt-rdepends",
   "tshark",
   "vim",
-  "vyos-1x-smoketest"
+  "ngnos-1x-smoketest"
 ]

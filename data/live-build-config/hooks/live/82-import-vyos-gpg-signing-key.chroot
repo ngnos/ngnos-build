@@ -5,7 +5,7 @@ if ! command -v gpg &> /dev/null; then
     exit 1
 fi
 
-GPG_KEY="/usr/share/vyos/keys/vyos-release.pub.asc"
+GPG_KEY="/usr/share/ngnos/keys/ngnos-release.pub.asc"
 
 echo I: Import GPG key
 gpg --import ${GPG_KEY}

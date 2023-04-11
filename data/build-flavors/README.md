@@ -1,6 +1,6 @@
-# VyOS build flavors
+# ngNOS build flavors
 
-VyOS supports multiple different hardware and virtual platforms.
+ngNOS supports multiple different hardware and virtual platforms.
 Those platforms often need custom packages and may require custom
 configs. To make maintenance of existing flavors simpler
 and to allow everyone to make and maintain their own flavors,
@@ -17,12 +17,12 @@ image_format = "iso"
 packages = [
   # QEMU and Xen guest tools exist for multiple architectures
   "qemu-guest-agent",
-  "vyos-xe-guest-utilities",
+  "ngnos-xe-guest-utilities",
 ]
 
 [architectures.amd64]
   # Hyper-V and VMware guest tools are x86-only
-  packages = ["hyperv-daemons", "vyos-1x-vmware"]
+  packages = ["hyperv-daemons", "ngnos-1x-vmware"]
 ```
 
 ## Image format

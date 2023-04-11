@@ -2,7 +2,7 @@
 exit 0
 echo I: Download grub-efi packages.
 
-mkdir -p /usr/share/vyos/packages
-cd /usr/share/vyos/packages
+mkdir -p /usr/share/ngnos/packages
+cd /usr/share/ngnos/packages
 aptitude download grub-efi
 aptitude download grub-efi-amd64

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# For FRR to work in VyOS as expected we need a few fixups
+# For FRR to work in ngNOS as expected we need a few fixups
 #
 # 1. Enable daemons we use in /etc/frr/daemons
 # 2. Set the VRF backend of Zebra to netns (-n option) in /etc/frr/daemons.conf

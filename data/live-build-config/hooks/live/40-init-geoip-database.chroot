@@ -5,7 +5,7 @@
 
 DATE_SUFFIX=$(date +%Y-%m)
 URL="https://download.db-ip.com/free/dbip-country-lite-${DATE_SUFFIX}.csv.gz"
-OUT_PATH="/usr/share/vyos-geoip/dbip-country-lite.csv.gz"
+OUT_PATH="/usr/share/ngnos-geoip/dbip-country-lite.csv.gz"
 
 mkdir -p $(dirname $OUT_PATH)
 wget -O - $URL > $OUT_PATH

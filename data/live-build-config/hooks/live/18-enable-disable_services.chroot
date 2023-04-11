@@ -70,9 +70,9 @@ systemctl disable sendmail.service
 echo I: Enabling services
 systemctl enable frr.service
 systemctl enable ssh-session-cleanup.service
-systemctl enable vyos-hostsd.service
+systemctl enable ngnos-hostsd.service
 systemctl enable acpid.service
-systemctl enable vyos-configd.service
+systemctl enable ngnos-configd.service
 
 echo I: Masking services
 systemctl mask systemd-journald-audit.socket
