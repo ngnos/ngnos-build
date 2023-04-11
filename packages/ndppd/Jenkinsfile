@@ -28,5 +28,5 @@ def pkgList = [
      'buildCmd': 'cd ..; ./build.sh'],
 ]
 
-// Start package build using library function from https://github.com/vyos/vyos-build
+// Start package build using library function from https://github.com/ngnos/ngnos-build
 buildPackage('ndppd', pkgList, null, true, "**/packages/ndppd/*")
