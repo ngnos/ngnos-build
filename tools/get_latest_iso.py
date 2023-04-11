@@ -6,7 +6,7 @@ from lxml import html
 from urllib.parse import unquote
 import requests
 
-BASE_URL = 'https://downloads.vyos.io/'
+BASE_URL = 'https://downloads.ngnos.com/'
 PAGE_URL = BASE_URL+'?dir=rolling/current/amd64'
 
 

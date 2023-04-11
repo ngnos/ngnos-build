@@ -1,7 +1,7 @@
 system {
-    host-name vyos
+    host-name ngnos
     login {
-        user vyos {
+        user ngnos {
             authentication {
                 encrypted-password "*"
                 plaintext-password ""
@@ -20,9 +20,9 @@ system {
         }
     }
     ntp {
-        server "time1.vyos.net"
-        server "time2.vyos.net"
-        server "time3.vyos.net"
+        server "time1.ngnos.com"
+        server "time2.ngnos.com"
+        server "time3.ngnos.com"
     }
     console {
         device ttyS0 {
