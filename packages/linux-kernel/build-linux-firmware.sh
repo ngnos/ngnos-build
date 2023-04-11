@@ -86,7 +86,7 @@ done
 echo "I: Create linux-firmware package"
 rm -f ${NGNOS_FIRMWARE_NAME}_*.deb
 fpm --input-type dir --output-type deb --name ${NGNOS_FIRMWARE_NAME} \
-    --maintainer "VyOS Package Maintainers <maintainers@ngnos.com>" \
+    --maintainer "ngNOS Package Maintainers <maintainers@ngnos.com>" \
     --description "Binary firmware for various drivers in the Linux kernel" \
     --architecture all --version ${GIT_COMMIT} --deb-compression gz -C ${NGNOS_FIRMWARE_DIR}
 
