@@ -21,7 +21,7 @@ mkdir -p usr/bin
 cp minisign usr/bin
 
 fpm --input-type dir --output-type deb --name minisign \
-    --maintainer "VyOS Package Maintainers <maintainers@vyos.net>" \
+    --maintainer "ngNOS Package Maintainers <maintainers@ngnos.com>" \
     --description "A dead simple tool to sign files and verify signatures." \
     --depends libsodium23 --architecture $(dpkg --print-architecture) \
     --version $(git describe --always) --license ISC --deb-compression gz usr
