@@ -25,6 +25,6 @@ install --strip --mode 0755 nhrp/opennhrpctl debian/usr/sbin
 # "cut" first character from version string
 fpm --input-type dir --output-type deb --name opennhrp \
     --version $(git describe --always | cut -c2-) --deb-compression gz \
-    --maintainer "VyOS Package Maintainers <maintainers@vyos.net>" \
+    --maintainer "ngNOS Package Maintainers <maintainers@ngnos.com>" \
     --description "NBMA Next Hop Resolution Protocol daemon" \
     --license "MIT" -C $INSTALL_DIR --package ..
