@@ -12,5 +12,5 @@ fi
 cd ${SRC}
 echo "I: Retrieve version information from Git"
 # Build owamp-client owamp-server twamp-client twamp-server
-echo "I: Build VyOS owamp Packages"
+echo "I: Build ngNOS owamp Packages"
 dpkg-buildpackage -us -uc -tc -b
