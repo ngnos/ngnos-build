@@ -1,9 +1,9 @@
 From ee6c0b3ff6e3df5c7aef628621e19a813ff308ed Mon Sep 17 00:00:00 2001
 From: Christian Poessinger <christian@poessinger.com>
 Date: Tue, 27 Dec 2022 13:36:43 +0000
-Subject: [PATCH] VyOS: disable options enabled by Debian that are unused
+Subject: [PATCH] ngNOS: disable options enabled by Debian that are unused
 
-VyOS does not implement CLI options for all options exposed by Debian.
+ngNOS does not implement CLI options for all options exposed by Debian.
 
 The following options need to be disabled for the DMVPN patchset:
   - mediation
@@ -82,7 +82,7 @@ index 2fed1f10f..fa0d21a0c 100755
  #export DEB_LDFLAGS_MAINT_APPEND=-Wl,--as-needed -Wl,-O1 -Wl,-z,defs
  export DEB_BUILD_MAINT_OPTIONS=hardening=+all
  
-+CONFIGUREARGS_VYOS := --disable-warnings \
++CONFIGUREARGS_NGNOS := --disable-warnings \
 +               --disable-ldap \
 +               --disable-led \
 +               --disable-nm \
@@ -99,7 +99,7 @@ index 2fed1f10f..fa0d21a0c 100755
  
  override_dh_auto_configure:
 -	dh_auto_configure -- $(CONFIGUREARGS)
-+	dh_auto_configure -- $(CONFIGUREARGS) $(CONFIGUREARGS_VYOS)
++	dh_auto_configure -- $(CONFIGUREARGS) $(CONFIGUREARGS_NGNOS)
  
  override_dh_auto_clean:
  	dh_auto_clean
