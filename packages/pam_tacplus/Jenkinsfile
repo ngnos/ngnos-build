@@ -30,5 +30,5 @@ def pkgList = [
      'buildCmd': 'cd ..; ./build.sh'],
 ]
 
-// Start package build using library function from https://github.com/vyos/vyos-build
+// Start package build using library function from https://github.com/ngnos/ngnos-build
 buildPackage('pam_tacplus', pkgList, null, true, "**/packages/pam_tacplus/*")
