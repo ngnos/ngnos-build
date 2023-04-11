@@ -21,7 +21,7 @@ import sys
 import os
 from distutils.spawn import find_executable
 
-import vyos_build_defaults as defaults
+import ngnos_build_defaults as defaults
 
 def check_build_config():
     if not os.path.exists(defaults.BUILD_CONFIG):

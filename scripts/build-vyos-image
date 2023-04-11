@@ -14,8 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# File: build-vyos-image
-# Purpose: builds VyOS images using a fork of Debian's live-build tool
+# File: build-ngnos-image
+# Purpose: builds ngNOS images using a fork of Debian's live-build tool
 
 import re
 import os
@@ -40,8 +40,8 @@ except ModuleNotFoundError as e:
     print("Cannot load a required library: {}".format(e))
     print("Please make sure the following Python3 modules are installed: toml jinja2 git")
 
-import vyos_build_utils as utils
-import vyos_build_defaults as defaults
+import ngnos_build_utils as utils
+import ngnos_build_defaults as defaults
 
 # argparse converts hyphens to underscores,
 # so for lookups in the original options hash we have to convert them back
@@ -112,7 +112,7 @@ if __name__ == "__main__":
        'binaries': []
     }
 
-    print("I: Checking if packages required for VyOS image build are installed")
+    print("I: Checking if packages required for ngNOS image build are installed")
     try:
         checker = utils.check_system_dependencies(deps)
     except OSError as e:
@@ -143,7 +143,7 @@ if __name__ == "__main__":
        'debian-mirror': ('Debian repository mirror', lambda: build_defaults['debian_mirror'], None),
        'debian-security-mirror': ('Debian security updates mirror', lambda: build_defaults['debian_security_mirror'], None),
        'pbuilder-debian-mirror': ('Debian repository mirror for pbuilder env bootstrap', lambda: build_defaults['debian_mirror'], None),
-       'vyos-mirror': ('VyOS package mirror', lambda: build_defaults["vyos_mirror"], None),
+       'ngnos-mirror': ('ngNOS package mirror', lambda: build_defaults["ngnos_mirror"], None),
        'build-type': ('Build type, release or development', lambda: 'development', lambda x: x in ['release', 'development']),
        'version': ('Version number (release builds only)', None, None),
        'build-comment': ('Optional build comment', lambda: '', None)
@@ -320,21 +320,21 @@ if __name__ == "__main__":
     }
 
     os_release = f"""
-    PRETTY_NAME="VyOS {version} ({build_config['release_train']})"
-    NAME="VyOS"
+    PRETTY_NAME="ngNOS {version} ({build_config['release_train']})"
+    NAME="ngNOS"
     VERSION_ID="{version}"
     VERSION="{version} ({build_config['release_train']})"
     VERSION_CODENAME={build_defaults['debian_distribution']}
-    ID=vyos
+    ID=ngnos
     HOME_URL="{build_defaults['website_url']}"
     SUPPORT_URL="{build_defaults['support_url']}"
     BUG_REPORT_URL="{build_defaults['bugtracker_url']}"
     """
 
     chroot_includes_dir = os.path.join(defaults.BUILD_DIR, defaults.CHROOT_INCLUDES_DIR)
-    vyos_data_dir = os.path.join(chroot_includes_dir, "usr/share/vyos")
-    os.makedirs(vyos_data_dir, exist_ok=True)
-    with open(os.path.join(vyos_data_dir, 'version.json'), 'w') as f:
+    ngnos_data_dir = os.path.join(chroot_includes_dir, "usr/share/ngnos")
+    os.makedirs(ngnos_data_dir, exist_ok=True)
+    with open(os.path.join(ngnos_data_dir, 'version.json'), 'w') as f:
         json.dump(version_data, f)
 
     # For backwards compatibility with 'add system image' script from older versions
@@ -369,16 +369,16 @@ if __name__ == "__main__":
 
     # Add the additional repositories to package lists
     print("I: Setting up additional APT entries")
-    vyos_repo_entry = "deb {0} {1} main\n".format(build_config['vyos_mirror'], build_config['vyos_branch'])
+    ngnos_repo_entry = "deb {0} {1} main\n".format(build_config['ngnos_mirror'], build_config['ngnos_branch'])
 
-    apt_file = defaults.VYOS_REPO_FILE
+    apt_file = defaults.NGNOS_REPO_FILE
 
     if debug:
         print("D: Adding these entries to {0}:".format(apt_file))
-        print("\t", vyos_repo_entry)
+        print("\t", ngnos_repo_entry)
 
     with open(apt_file, 'w') as f:
-        f.write(vyos_repo_entry)
+        f.write(ngnos_repo_entry)
 
     # Add custom APT entries
     if build_config.get('additional_repositories', False):
@@ -421,7 +421,7 @@ if __name__ == "__main__":
     lb_config_tmpl = jinja2.Template("""
     lb config noauto \
             --architectures {{architecture}} \
-            --bootappend-live "boot=live components hostname=vyos username=live nopersistence noautologin nonetworking union=overlay console=ttyS0,115200 console=tty0 net.ifnames=0 biosdevname=0" \
+            --bootappend-live "boot=live components hostname=ngnos username=live nopersistence noautologin nonetworking union=overlay console=ttyS0,115200 console=tty0 net.ifnames=0 biosdevname=0" \
             --bootappend-live-failsafe "live components memtest noapic noapm nodma nomce nolapic nomodeset nosmp nosplash vga=normal console=ttyS0,115200 console=tty0 net.ifnames=0 biosdevname=0" \
             --linux-flavours {{kernel_flavor}} \
             --linux-packages linux-image-{{kernel_version}} \
@@ -430,9 +430,9 @@ if __name__ == "__main__":
             --checksums 'sha256 md5' \
             --debian-installer none \
             --distribution {{debian_distribution}} \
-            --iso-application "VyOS" \
+            --iso-application "ngNOS" \
             --iso-publisher "{{build_by}}" \
-            --iso-volume "VyOS" \
+            --iso-volume "ngNOS" \
             --debootstrap-options "--variant=minbase --exclude=isc-dhcp-client,isc-dhcp-common,ifupdown --include=apt-utils,ca-certificates,gnupg2" \
             --mirror-bootstrap {{debian_mirror}} \
             --mirror-chroot {{debian_mirror}} \
@@ -453,13 +453,13 @@ if __name__ == "__main__":
 
     lb_config_command = lb_config_tmpl.render(build_config)
 
-    ## Pin release for VyOS packages
+    ## Pin release for ngNOS packages
     apt_pin = f"""Package: *
 Pin: release n={build_config['release_train']}
 Pin-Priority: 600
 """
 
-    with open(defaults.VYOS_PIN_FILE, 'w') as f:
+    with open(defaults.NGNOS_PIN_FILE, 'w') as f:
         f.write(apt_pin)
 
     print("I: Configuring live-build")
@@ -494,4 +494,4 @@ Pin-Priority: 600
 
     # Copy the image
     shutil.copy("live-image-{0}.hybrid.iso".format(build_config["architecture"]),
-      "vyos-{0}-{1}.iso".format(version_data["version"], build_config["architecture"]))
+      "ngnos-{0}-{1}.iso".format(version_data["version"], build_config["architecture"]))

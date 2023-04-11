@@ -19,7 +19,7 @@
 #  This script installs a system on a emulated qemu host to verify
 #  that the iso produced is installable and boots.
 #  after the iso is booted from disk it also tries to execute the
-#  vyos-smoketest script to verify checks there.
+#  ngnos-smoketest script to verify checks there.
 #
 #  For now it will not fail on failed smoketest but will fail on
 #  install and boot errors.
@@ -51,7 +51,7 @@ from datetime import datetime
 EXCEPTION = 0
 now = datetime.now()
 
-parser = argparse.ArgumentParser(description='Install and start a test VyOS vm.')
+parser = argparse.ArgumentParser(description='Install and start a test ngNOS vm.')
 parser.add_argument('iso', help='ISO file to install')
 parser.add_argument('disk', help='name of disk image file', nargs='?',
                             default='testinstall-{}-{}.img'.format(now.strftime('%Y%m%d-%H%M%S'),
@@ -79,7 +79,7 @@ parser.add_argument('--qemu-cmd', help='Only generate QEMU launch command',
 args = parser.parse_args()
 
 with open('data/defaults.toml') as f:
-    vyos_defaults = toml.load(f)
+    ngnos_defaults = toml.load(f)
 
 class StreamToLogger(object):
     """
@@ -187,7 +187,7 @@ def shutdownVM(c, log, message=''):
         log.info('Waiting for shutdown...')
         # Shutdown in qemu doesnt work first time
         # Use this workaround
-        # https://vyos.dev/T5024
+        # https://ngnos.dev/T5024
         c.sendline('poweroff now')
         if not c.isalive():
             log.info('VM is shut down!')
@@ -285,12 +285,12 @@ try:
     c = pexpect.spawn(cmd, logfile=stl, timeout=60)
 
     #################################################
-    # Logging into VyOS system
+    # Logging into ngNOS system
     #################################################
-    op_mode_prompt = r'vyos@vyos:~\$'
-    cfg_mode_prompt = r'vyos@vyos#'
-    default_user = 'vyos'
-    default_password = 'vyos'
+    op_mode_prompt = r'ngnos@ngnos:~\$'
+    cfg_mode_prompt = r'ngnos@ngnos#'
+    default_user = 'ngnos'
+    default_password = 'ngnos'
 
     try:
         c.expect('Automatic boot in', timeout=10)
@@ -301,7 +301,7 @@ try:
     loginVM(c, log)
 
     #################################################
-    # Installing into VyOS system
+    # Installing into ngNOS system
     #################################################
     log.info('Starting installer')
     c.sendline('install image')
@@ -359,7 +359,7 @@ try:
     c = pexpect.spawn(cmd, logfile=stl)
 
     #################################################
-    # Logging into VyOS system
+    # Logging into ngNOS system
     #################################################
     try:
         c.expect('The highlighted entry will be executed automatically in', timeout=10)
@@ -379,9 +379,9 @@ try:
     # Start/stop config daemon
     #################################################
     if args.configd:
-        c.sendline('sudo systemctl start vyos-configd.service &> /dev/null')
+        c.sendline('sudo systemctl start ngnos-configd.service &> /dev/null')
     else:
-        c.sendline('sudo systemctl stop vyos-configd.service &> /dev/null')
+        c.sendline('sudo systemctl stop ngnos-configd.service &> /dev/null')
     c.expect(op_mode_prompt)
 
     #################################################
@@ -395,7 +395,7 @@ try:
     c.sendline('show version')
     c.expect(op_mode_prompt)
     c.sendline('show version kernel')
-    c.expect(f'{vyos_defaults["kernel_version"]}-{vyos_defaults["architecture"]}-vyos')
+    c.expect(f'{ngnos_defaults["kernel_version"]}-{ngnos_defaults["architecture"]}-ngnos')
     c.expect(op_mode_prompt)
     c.sendline('show version frr')
     c.expect(op_mode_prompt)
@@ -438,7 +438,7 @@ try:
 
 
         #################################################
-        # Logging into VyOS system
+        # Logging into ngNOS system
         #################################################
         try:
             c.expect('The highlighted entry will be executed automatically in', timeout=10)
@@ -488,11 +488,11 @@ try:
         # run default smoketest suite
         if args.no_interfaces:
             # remove interface tests as they consume a lot of time
-            c.sendline('sudo rm -f /usr/libexec/vyos/tests/smoke/cli/test_interfaces_*')
+            c.sendline('sudo rm -f /usr/libexec/ngnos/tests/smoke/cli/test_interfaces_*')
             c.expect(op_mode_prompt)
 
-        log.info('Executing VyOS smoketests')
-        c.sendline('/usr/bin/vyos-smoketest')
+        log.info('Executing ngNOS smoketests')
+        c.sendline('/usr/bin/ngnos-smoketest')
         i = c.expect(['\n +Invalid command:', '\n +Set failed',
                       'No such file or directory', r'\n\S+@\S+[$#]'], timeout=test_timeout)
 
@@ -501,7 +501,7 @@ try:
         elif i == 1:
             raise Exception('Set syntax failed :/')
         elif i == 2:
-            tmp = '(W)hy (T)he (F)ace? VyOS smoketest not found!'
+            tmp = '(W)hy (T)he (F)ace? ngNOS smoketest not found!'
             log.error(tmp)
             raise Exception(tmp)
 
@@ -525,22 +525,22 @@ try:
         c.expect(op_mode_prompt)
 
         log.info('Generating PKI objects')
-        c.sendline(f'/usr/bin/vyos-configtest-pki')
+        c.sendline(f'/usr/bin/ngnos-configtest-pki')
         c.expect(op_mode_prompt, timeout=900)
 
-        script_file = '/config/scripts/vyos-foo-update.script'
+        script_file = '/config/scripts/ngnos-foo-update.script'
         c.sendline(f'echo "#!/bin/sh" > {script_file}; chmod 775 {script_file}')
         c.expect(op_mode_prompt)
 
         log.info('Executing load config tests')
-        c.sendline('/usr/bin/vyos-configtest')
+        c.sendline('/usr/bin/ngnos-configtest')
         i = c.expect(['\n +Invalid command:', 'No such file or directory',
                      r'\n\S+@\S+[$#]'], timeout=test_timeout)
 
         if i==0:
             raise Exception('Invalid command detected')
         elif i==1:
-            tmp = '(W)hy (T)he (F)ace? VyOS smoketest not found!'
+            tmp = '(W)hy (T)he (F)ace? ngNOS smoketest not found!'
             log.error(tmp)
             raise Exception(tmp)
 
@@ -558,7 +558,7 @@ try:
     c.close()
 
 except pexpect.exceptions.TIMEOUT:
-    log.error('Timeout waiting for VyOS system')
+    log.error('Timeout waiting for ngNOS system')
     log.error(traceback.format_exc())
     EXCEPTION = 1
 
@@ -569,7 +569,7 @@ except pexpect.exceptions.ExceptionPexpect:
     EXCEPTION = 1
 
 except Exception:
-    log.error('Unknown error occured while VyOS!')
+    log.error('Unknown error occured while ngNOS!')
     traceback.print_exc()
     EXCEPTION = 1
 

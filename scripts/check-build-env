@@ -38,7 +38,7 @@ deps = {
    'binaries': []
 }
 
-print("Checking if packages required for VyOS image build are installed")
+print("Checking if packages required for ngNOS image build are installed")
 
 checker = util.DependencyChecker(deps)
 

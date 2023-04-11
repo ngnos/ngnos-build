@@ -104,19 +104,19 @@ version_data = {
 }
 
 os_release = f"""
-PRETTY_NAME="VyOS {version} ({build_config['release_train']})"
-NAME="VyOS"
+PRETTY_NAME="ngNOS {version} ({build_config['release_train']})"
+NAME="ngNOS"
 VERSION_ID="{version}"
 VERSION="{version} ({build_config['release_train']})"
 VERSION_CODENAME=bookworm
-ID=vyos
-HOME_URL="https://vyos.io"
-SUPPORT_URL="https://support.vyos.io"
-BUG_REPORT_URL="https://vyos.dev"
+ID=ngnos
+HOME_URL="https://ngnos.com"
+SUPPORT_URL="https://support.ngnos.com"
+BUG_REPORT_URL="https://ngnos.com"
 """
 
-os.makedirs(os.path.join(defaults.CHROOT_INCLUDES_DIR, 'usr/share/vyos'), exist_ok=True)
-with open(os.path.join(defaults.CHROOT_INCLUDES_DIR, 'usr/share/vyos/version.json'), 'w') as f:
+os.makedirs(os.path.join(defaults.CHROOT_INCLUDES_DIR, 'usr/share/ngnos'), exist_ok=True)
+with open(os.path.join(defaults.CHROOT_INCLUDES_DIR, 'usr/share/ngnos/version.json'), 'w') as f:
     json.dump(version_data, f)
 
 # For backwards compatibility with 'add system image' script from older versions

@@ -79,22 +79,22 @@ echo ""
 
 GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
-# First we need to get vyos-world so we know all individual packages for VyOS
-curl -L https://github.com/vyos/vyos-world/raw/$GIT_BRANCH/debian/control \
-  --output /tmp/vyos-world.control --retry 100 --retry-delay 1 --silent
+# First we need to get ngnos-world so we know all individual packages for ngNOS
+curl -L https://github.com/ngnos/ngnos-world/raw/$GIT_BRANCH/debian/control \
+  --output /tmp/ngnos-world.control --retry 100 --retry-delay 1 --silent
 
-VYOS_PACKAGES=$(get_runtime_depends /tmp/vyos-world.control)
-rm -f /tmp/vyos-world.control
-for pkg in $VYOS_PACKAGES
+NGNOS_PACKAGES=$(get_runtime_depends /tmp/ngnos-world.control)
+rm -f /tmp/ngnos-world.control
+for pkg in $NGNOS_PACKAGES
 do
     # Check if repo exists
-    res=$(curl -o /dev/null --silent -Iw '%{http_code}' https://github.com/vyos/$pkg)
+    res=$(curl -o /dev/null --silent -Iw '%{http_code}' https://github.com/ngnos/$pkg)
     if [[ $res -ne 200 ]]; then
         continue
     fi
 
     CTRLFILE=/tmp/$pkg.control
-    curl -L https://github.com/vyos/$pkg/raw/$GIT_BRANCH/debian/control \
+    curl -L https://github.com/ngnos/$pkg/raw/$GIT_BRANCH/debian/control \
       --output $CTRLFILE --retry 100 --retry-delay 1 --silent
 
     declare -a array
@@ -104,7 +104,7 @@ do
     length=${#array[@]}
     cnt=0
 
-    echo "# Packages needed to build '$pkg' from https://github.com/vyos/$pkg"
+    echo "# Packages needed to build '$pkg' from https://github.com/ngnos/$pkg"
     echo "apt-get install -y \\"
     for name in "${array[@]}"; do
         cnt=$((cnt + 1))

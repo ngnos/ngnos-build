@@ -39,8 +39,8 @@ LB_CONFIG_DIR = 'config'
 CHROOT_INCLUDES_DIR = 'config/includes.chroot'
 ARCHIVES_DIR = 'config/archives/'
 
-VYOS_REPO_FILE = 'config/archives/vyos.list.chroot'
-VYOS_PIN_FILE = 'config/archives/release.pref.chroot'
+NGNOS_REPO_FILE = 'config/archives/ngnos.list.chroot'
+NGNOS_PIN_FILE = 'config/archives/release.pref.chroot'
 CUSTOM_REPO_FILE = 'config/archives/custom.list.chroot'
 PACKAGE_LIST_FILE = 'config/package-lists/custom.list.chroot'
 
