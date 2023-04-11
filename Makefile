@@ -11,7 +11,7 @@ all:
 .ONESHELL:
 iso: clean
 	set -o pipefail
-	@./build-vyos-image iso
+	@./build-ngnos-image iso
 	exit 0
 
 .PHONY: prepare-package-env
@@ -64,7 +64,7 @@ clean:
 
 	rm -f config/binary config/bootstrap config/chroot config/common config/source
 	rm -f build.log
-	rm -f vyos-*.iso
+	rm -f ngnos-*.iso
 	rm -f *.img
 	rm -f *.xz
 	rm -f *.vhd

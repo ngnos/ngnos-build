@@ -32,7 +32,7 @@ node('Docker') {
             if (branchName.equals('master'))
                 branchName = 'current'
 
-            env.DOCKER_IMAGE = 'vyos/vyos-build:' + branchName
+            env.DOCKER_IMAGE = 'vyos/ngnos-build:' + branchName
 
             // Get the current UID and GID from the jenkins agent to allow use of the same UID inside Docker
             env.USR_ID = sh(returnStdout: true, script: 'id -u').toString().trim()
@@ -57,9 +57,9 @@ pipeline {
         cron('H 3 * * *')
     }
     parameters {
-        string(name: 'BUILD_BY', defaultValue: 'autobuild@vyos.net', description: 'Builder identifier (e.g. jrandomhacker@example.net)')
+        string(name: 'BUILD_BY', defaultValue: 'autobuild@ngnos.net', description: 'Builder identifier (e.g. jrandomhacker@example.net)')
         string(name: 'BUILD_VERSION', defaultValue: env.BASE_VERSION + 'ISO8601-TIMESTAMP', description: 'Version number (release builds only)')
-        booleanParam(name: 'BUILD_PUBLISH', defaultValue: true, description: 'Publish this build to downloads.vyos.io and AWS S3')
+        booleanParam(name: 'BUILD_PUBLISH', defaultValue: true, description: 'Publish this build to downloads.ngnos.io and AWS S3')
         booleanParam(name: 'BUILD_SMOKETESTS', defaultValue: true, description: 'Include Smoketests in ISO image')
         booleanParam(name: 'BUILD_SNAPSHOT', defaultValue: false, description: 'Upload image to AWS S3 snapshot bucket')
     }
@@ -92,18 +92,18 @@ pipeline {
 
                     def CUSTOM_PACKAGES = ''
                     if (params.BUILD_SMOKETESTS)
-                        CUSTOM_PACKAGES = '--custom-package vyos-1x-smoketest'
+                        CUSTOM_PACKAGES = '--custom-package ngnos-1x-smoketest'
 
-                    def VYOS_VERSION = params.BUILD_BY
+                    def NGNOS_VERSION = params.BUILD_BY
                     if (params.BUILD_VERSION == env.BASE_VERSION + 'ISO8601-TIMESTAMP')
-                        VYOS_VERSION = env.BASE_VERSION + sh(returnStdout: true, script: 'date -u +%Y%m%d%H%M').toString().trim()
+                        NGNOS_VERSION = env.BASE_VERSION + sh(returnStdout: true, script: 'date -u +%Y%m%d%H%M').toString().trim()
 
                     sh """
-                        sudo --preserve-env ./build-vyos-image \
+                        sudo --preserve-env ./build-ngnos-image \
                             --build-by "${params.BUILD_BY}" \
                             --debian-mirror http://deb.debian.org/debian/ \
                             --build-type release \
-                            --version "${VYOS_VERSION}" ${CUSTOM_PACKAGES} iso
+                            --version "${NGNOS_VERSION}" ${CUSTOM_PACKAGES} iso
                     """
 
                     if (fileExists('build/live-image-amd64.hybrid.iso') == false) {
@@ -133,7 +133,7 @@ pipeline {
                         sh "sudo make test"
                     }
                 }
-                stage('vyos-configd and arbitrary config loader') {
+                stage('ngnos-configd and arbitrary config loader') {
                     when {
                         expression { fileExists 'build/live-image-amd64.hybrid.iso' }
                     }
@@ -155,47 +155,47 @@ pipeline {
                 if (! params.BUILD_PUBLISH)
                     return
 
-                files = findFiles(glob: 'build/vyos*.iso')
+                files = findFiles(glob: 'build/ngnos*.iso')
                 // Publish ISO image to daily builds bucket
                 if (files) {
                     // Publish ISO image to snapshot bucket
                     if (files && params.BUILD_SNAPSHOT) {
-                        withAWS(region: 'us-east-1', credentials: 's3-vyos-downloads-rolling-rw') {
-                            s3Upload(bucket: 's3-us.vyos.io', path: 'snapshot/' + params.BUILD_VERSION + '/', workingDir: 'build', includePathPattern: 'vyos*.iso',
+                        withAWS(region: 'us-east-1', credentials: 's3-ngnos-downloads-rolling-rw') {
+                            s3Upload(bucket: 's3-us.ngnos.com', path: 'snapshot/' + params.BUILD_VERSION + '/', workingDir: 'build', includePathPattern: 'ngnos*.iso',
                             cacheControl: "public, max-age=2592000")
                         }
                     } else {
                         // Publish build result to AWS S3 rolling bucket
-                        withAWS(region: 'us-east-1', credentials: 's3-vyos-downloads-rolling-rw') {
-                            s3Upload(bucket: 's3-us.vyos.io', path: 'rolling/' + getGitBranchName() + '/',
-                                     workingDir: 'build', includePathPattern: 'vyos*.iso')
-                            s3Copy(fromBucket: 's3-us.vyos.io', fromPath: 'rolling/' + getGitBranchName() + '/' + files[0].name,
-                                   toBucket: 's3-us.vyos.io', toPath: 'rolling/' + getGitBranchName() + '/vyos-rolling-latest.iso')
+                        withAWS(region: 'us-east-1', credentials: 's3-ngnos-downloads-rolling-rw') {
+                            s3Upload(bucket: 's3-us.ngnos.com', path: 'rolling/' + getGitBranchName() + '/',
+                                     workingDir: 'build', includePathPattern: 'ngnos*.iso')
+                            s3Copy(fromBucket: 's3-us.ngnos.com', fromPath: 'rolling/' + getGitBranchName() + '/' + files[0].name,
+                                   toBucket: 's3-us.ngnos.com', toPath: 'rolling/' + getGitBranchName() + '/ngnos-rolling-latest.iso')
                         }
                     }
 
                     // Trigger GitHub action which will re-build the static community website which
                     // also holds the AWS download links to the generated ISO images
-                    withCredentials([string(credentialsId: 'vyos.net-build-trigger-token', variable: 'TOKEN')]) {
+                    withCredentials([string(credentialsId: 'ngnos.net-build-trigger-token', variable: 'TOKEN')]) {
                         sh '''
                             curl -X POST --header "Accept: application/vnd.github.v3+json" \
                             --header "authorization: Bearer $TOKEN" --data '{"ref": "production"}' \
-                            https://api.github.com/repos/vyos/community.vyos.net/actions/workflows/main.yml/dispatches
+                            https://api.github.com/repos/ngnos/community.ngnos.com/actions/workflows/main.yml/dispatches
                         '''
                     }
                 }
 
                 // Publish ISO image to snapshot bucket
                 if (files && params.BUILD_SNAPSHOT) {
-                    withAWS(region: 'us-east-1', credentials: 's3-vyos-downloads-rolling-rw') {
-                        s3Upload(bucket: 's3-us.vyos.io', path: 'snapshot/',
-                                 workingDir: 'build', includePathPattern: 'vyos*.iso')
+                    withAWS(region: 'us-east-1', credentials: 's3-ngnos-downloads-rolling-rw') {
+                        s3Upload(bucket: 's3-us.ngnos.com', path: 'snapshot/',
+                                 workingDir: 'build', includePathPattern: 'ngnos*.iso')
                     }
                 }
             }
         }
         failure {
-            archiveArtifacts artifacts: '**/build/vyos-*.iso, **/build/vyos-*.qcow2',
+            archiveArtifacts artifacts: '**/build/ngnos-*.iso, **/build/ngnos-*.qcow2',
                 allowEmptyArchive: true
         }
         cleanup {
