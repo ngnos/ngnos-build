@@ -14,7 +14,7 @@ fi
 
 . ${KERNEL_VAR_FILE}
 
-url="https://dev.packages.vyos.net/source-mirror/QAT1.7.L.4.20.0-00001.tar.gz"
+url="https://dev.packages.ngnos.net/source-mirror/QAT1.7.L.4.20.0-00001.tar.gz"
 
 cd ${CWD}
 
@@ -26,9 +26,9 @@ DRIVER_VERSION_EXTRA="-0"
 
 # Build up Debian related variables required for packaging
 DEBIAN_ARCH=$(dpkg --print-architecture)
-DEBIAN_DIR="${CWD}/vyos-intel-${DRIVER_NAME}_${DRIVER_VERSION}${DRIVER_VERSION_EXTRA}_${DEBIAN_ARCH}"
+DEBIAN_DIR="${CWD}/ngnos-intel-${DRIVER_NAME}_${DRIVER_VERSION}${DRIVER_VERSION_EXTRA}_${DEBIAN_ARCH}"
 DEBIAN_CONTROL="${DEBIAN_DIR}/DEBIAN/control"
-DEBIAN_POSTINST="${CWD}/vyos-intel-qat.postinst"
+DEBIAN_POSTINST="${CWD}/ngnos-intel-qat.postinst"
 
 # Fetch Intel driver source from SourceForge
 if [ -e ${DRIVER_FILE} ]; then
@@ -80,7 +80,7 @@ if [ -f ${DEBIAN_DIR}.deb ]; then
 fi
 
 # build Debian package
-echo "I: Building Debian package vyos-intel-${DRIVER_NAME}"
+echo "I: Building Debian package ngnos-intel-${DRIVER_NAME}"
 cd ${CWD}
 
 # delete non required files which are also present in the kernel package
@@ -90,9 +90,9 @@ find ${DEBIAN_DIR} -name "modules.*" | xargs rm -f
 echo "#!/bin/sh" > ${DEBIAN_POSTINST}
 echo "/sbin/depmod -a ${KERNEL_VERSION}${KERNEL_SUFFIX}" >> ${DEBIAN_POSTINST}
 
-fpm --input-type dir --output-type deb --name vyos-intel-${DRIVER_NAME} \
+fpm --input-type dir --output-type deb --name ngnos-intel-${DRIVER_NAME} \
     --version ${DRIVER_VERSION}${DRIVER_VERSION_EXTRA} --deb-compression gz \
-    --maintainer "VyOS Package Maintainers <maintainers@vyos.net>" \
+    --maintainer "ngNOS Package Maintainers <maintainers@ngnos.com>" \
     --description "Vendor based driver for Intel ${DRIVER_NAME}" \
     --depends linux-image-${KERNEL_VERSION}${KERNEL_SUFFIX} \
     --license "GPL2" -C ${DEBIAN_DIR} --after-install ${DEBIAN_POSTINST}

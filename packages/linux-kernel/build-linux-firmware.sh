@@ -30,13 +30,13 @@ FW_FILES=$(find ${LINUX_SRC}/debian/linux-image/lib/modules/${KERNEL_VERSION}${K
 
 # Debian package will use the descriptive Git commit as version
 GIT_COMMIT=$(cd ${CWD}/${LINUX_FIRMWARE}; git describe --always)
-VYOS_FIRMWARE_NAME="vyos-linux-firmware"
-VYOS_FIRMWARE_DIR="${VYOS_FIRMWARE_NAME}_${GIT_COMMIT}-0_all"
-if [ -d ${VYOS_FIRMWARE_DIR} ]; then
+NGNOS_FIRMWARE_NAME="ngnos-linux-firmware"
+NGNOS_FIRMWARE_DIR="${NGNOS_FIRMWARE_NAME}_${GIT_COMMIT}-0_all"
+if [ -d ${NGNOS_FIRMWARE_DIR} ]; then
     # remove Debian package folder and deb file from previous runs
-    rm -rf ${VYOS_FIRMWARE_DIR}*
+    rm -rf ${NGNOS_FIRMWARE_DIR}*
 fi
-mkdir -p ${VYOS_FIRMWARE_DIR}
+mkdir -p ${NGNOS_FIRMWARE_DIR}
 
 # Install firmware files to build directory
 LINUX_FIRMWARE_BUILD_DIR="${LINUX_FIRMWARE}_${GIT_COMMIT}"
@@ -53,13 +53,13 @@ mkdir -p "${LINUX_FIRMWARE_BUILD_DIR}"
 )
 
 # Copy firmware file from linux firmware build directory into
-# assembly folder for the vyos-firmware package
+# assembly folder for the ngnos-firmware package
 SED_REPLACE="s@${CWD}/${LINUX_FIRMWARE}/@@"
 for FILE in ${FW_FILES}; do
     # If file is a symlink install the symlink target as well
     if [ -h "${LINUX_FIRMWARE_BUILD_DIR}/${FILE}" ]; then
         TARGET="$(realpath --relative-to="${LINUX_FIRMWARE_BUILD_DIR}" "${LINUX_FIRMWARE_BUILD_DIR}/${FILE}")"
-        TARGET_DIR="${VYOS_FIRMWARE_DIR}/lib/firmware/$(dirname "${TARGET}")"
+        TARGET_DIR="${NGNOS_FIRMWARE_DIR}/lib/firmware/$(dirname "${TARGET}")"
 
         if [ ! -f "${TARGET_DIR}/$(basename "${TARGET}")" ]; then
             if [ -f "${LINUX_FIRMWARE_BUILD_DIR}/${TARGET}" ]; then
@@ -74,7 +74,7 @@ for FILE in ${FW_FILES}; do
     fi
 
     if [ -f ${LINUX_FIRMWARE_BUILD_DIR}/${FILE} ]; then
-        FW_DIR="${VYOS_FIRMWARE_DIR}/lib/firmware/$(dirname ${FILE})"
+        FW_DIR="${NGNOS_FIRMWARE_DIR}/lib/firmware/$(dirname ${FILE})"
         mkdir -p "${FW_DIR}"
         echo "I: install firmware: ${FILE}"
         cp -P "${CWD}/${LINUX_FIRMWARE_BUILD_DIR}/${FILE}" "${FW_DIR}"
@@ -84,11 +84,11 @@ for FILE in ${FW_FILES}; do
 done
 
 echo "I: Create linux-firmware package"
-rm -f ${VYOS_FIRMWARE_NAME}_*.deb
-fpm --input-type dir --output-type deb --name ${VYOS_FIRMWARE_NAME} \
-    --maintainer "VyOS Package Maintainers <maintainers@vyos.net>" \
+rm -f ${NGNOS_FIRMWARE_NAME}_*.deb
+fpm --input-type dir --output-type deb --name ${NGNOS_FIRMWARE_NAME} \
+    --maintainer "VyOS Package Maintainers <maintainers@ngnos.com>" \
     --description "Binary firmware for various drivers in the Linux kernel" \
-    --architecture all --version ${GIT_COMMIT} --deb-compression gz -C ${VYOS_FIRMWARE_DIR}
+    --architecture all --version ${GIT_COMMIT} --deb-compression gz -C ${NGNOS_FIRMWARE_DIR}
 
 rm -rf "${LINUX_FIRMWARE_BUILD_DIR}"
-rm -rf ${VYOS_FIRMWARE_DIR}
+rm -rf ${NGNOS_FIRMWARE_DIR}

@@ -1,7 +1,7 @@
 From 1d625d2f745b61a718ce52cd1729f467c17defa6 Mon Sep 17 00:00:00 2001
 From: Alex Harpin <development@landsofshadow.co.uk>
 Date: Wed, 31 Dec 2014 10:33:38 +0000
-Subject: [PATCH] VyOS: add inotify support for stackable filesystems
+Subject: [PATCH] ngNOS: add inotify support for stackable filesystems
  (overlayfs)
 
 As it stands at the moment, overlayfs doesn't have full support for

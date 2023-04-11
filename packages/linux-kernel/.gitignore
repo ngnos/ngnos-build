@@ -14,6 +14,6 @@ i40e-*/
 igb-*/
 ixgbe-*/
 ixgbevf-*/
-vyos-intel-*/
-vyos-linux-firmware*/
+ngnos-intel-*/
+ngnos-linux-firmware*/
 kernel-vars

@@ -57,5 +57,5 @@ def pkgList = [
     ['name': 'qat', 'buildCmd': 'cd ..; ./build-intel-qat.sh'],
 ]
 
-// Start package build using library function from https://github.com/vyos/vyos-build
+// Start package build using library function from https://github.com/ngnos/ngnos-build
 buildPackage('Kernel', pkgList, null, true, "**/packages/linux-kernel/**")
