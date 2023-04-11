@@ -40,7 +40,7 @@ RUN grep "VERSION_ID" /etc/os-release || (echo 'VERSION_ID="12"' >> /etc/os-rele
 # On some versions of docker the emulation framework is not installed by default and
 # you need to install qemu, qemu-user-static and register qemu inside docker manually using:
 # `docker run --rm --privileged multiarch/qemu-user-static:register --reset`
-LABEL authors="VyOS Maintainers <maintainers@vyos.io>"
+LABEL authors="ngNOS Maintainers <maintainers@ngnos.com>"
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN /bin/echo -e 'APT::Install-Recommends "0";\nAPT::Install-Suggests "0";' > /etc/apt/apt.conf.d/01norecommends
@@ -80,7 +80,7 @@ RUN apt-get update && apt-get install -y \
       openssh-client \
       jq
 
-# Packages needed for vyos-build
+# Packages needed for ngnos-build
 RUN apt-get update && apt-get install -y \
       build-essential \
       python3-pystache \
@@ -103,7 +103,7 @@ RUN if dpkg-architecture -ii386 || dpkg-architecture -iamd64; then \
         grub2; \
     fi
 
-# Building libvyosconf requires a full configured OPAM/OCaml setup
+# Building libngnosconf requires a full configured OPAM/OCaml setup
 RUN apt-get update && apt-get install -y \
       debhelper \
       libffi-dev \
@@ -117,7 +117,7 @@ RUN dpkg-reconfigure ca-certificates; \
       echo "cacert=/etc/ssl/certs/ca-certificates.crt" >> ~/.curlrc; \
     fi
 
-# Installing OCAML needed to compile libvyosconfig
+# Installing OCAML needed to compile libngnosconfig
 RUN curl https://raw.githubusercontent.com/ocaml/opam/master/shell/install.sh \
       --output /tmp/opam_install.sh --retry 10 --retry-delay 5 && \
     sed -i 's/read BINDIR/BINDIR=""/' /tmp/opam_install.sh && sh /tmp/opam_install.sh && \
@@ -135,22 +135,22 @@ RUN eval $(opam env --root=/opt/opam --set-root) && opam install -y \
       containers \
       fileutils
 
-# Build VyConf which is required to build libvyosconfig
+# Build VyConf which is required to build libngnosconfig
 RUN eval $(opam env --root=/opt/opam --set-root) && \
-    opam pin add vyos1x-config https://github.com/vyos/vyos1x-config.git#8955c085 -y
+    opam pin add ngnos1x-config https://github.com/ngnos/ngnos1x-config.git#8955c085 -y
 
-# Packages needed for libvyosconfig
+# Packages needed for libngnosconfig
 RUN apt-get update && apt-get install -y \
       quilt \
       libpcre3-dev \
       libffi-dev
 
-# Build libvyosconfig
+# Build libngnosconfig
 RUN eval $(opam env --root=/opt/opam --set-root) && \
-    git clone https://github.com/vyos/libvyosconfig.git /tmp/libvyosconfig && \
-    cd /tmp/libvyosconfig && git checkout 137d7c3f && \
+    git clone https://github.com/ngnos/libngnosconfig.git /tmp/libngnosconfig && \
+    cd /tmp/libngnosconfig && git checkout 137d7c3f && \
     dpkg-buildpackage -uc -us -tc -b && \
-    dpkg -i /tmp/libvyosconfig0_*_$(dpkg-architecture -qDEB_HOST_ARCH).deb
+    dpkg -i /tmp/libngnosconfig0_*_$(dpkg-architecture -qDEB_HOST_ARCH).deb
 
 # Packages needed for open-vmdk
 RUN apt-get update && apt-get install -y \
@@ -209,7 +209,7 @@ RUN export RTRLIB_VERSION="0.8.0" export ARCH=$(dpkg-architecture -qDEB_HOST_ARC
     dpkg-buildpackage -uc -us -tc -b && \
     dpkg -i ../librtr0*_${ARCH}.deb ../librtr-dev*_${ARCH}.deb ../rtr-tools*_${ARCH}.deb
 
-# Packages needed for vyos-1x
+# Packages needed for ngnos-1x
 RUN pip install --break-system-packages \
       git+https://github.com/aristanetworks/j2lint.git@341b5d5db86 \
       pyhumps==3.8.0; \
@@ -234,7 +234,7 @@ RUN pip install --break-system-packages \
       quilt \
       whois
 
-# Packages needed for vyos-1x-xdp package, gcc-multilib is not available on
+# Packages needed for ngnos-1x-xdp package, gcc-multilib is not available on
 # arm64 but required by XDP
 RUN if dpkg-architecture -ii386 || dpkg-architecture -iamd64; then \
       apt-get update && apt-get install -y \
@@ -247,7 +247,7 @@ RUN if dpkg-architecture -ii386 || dpkg-architecture -iamd64; then \
         build-essential; \
     fi
 
-# Go required for validators and vyos-xe-guest-utilities
+# Go required for validators and ngnos-xe-guest-utilities
 RUN GO_VERSION_INSTALL="1.18.3" ; \
     wget -O /tmp/go${GO_VERSION_INSTALL}.linux-amd64.tar.gz https://go.dev/dl/go${GO_VERSION_INSTALL}.linux-$(dpkg-architecture -qDEB_HOST_ARCH).tar.gz ; \
     tar -C /opt -xzf /tmp/go*.tar.gz && \
@@ -281,7 +281,7 @@ RUN if dpkg-architecture -ii386 || dpkg-architecture -iamd64; then \
       grub2-common; \
     fi
 
-# Packages needed for vyos-cloud-init
+# Packages needed for ngnos-cloud-init
 RUN apt-get update && apt-get install -y \
       python3-configobj \
       python3-httpretty \
@@ -341,7 +341,7 @@ RUN apt-get update && apt-get install -y \
 
 # Allow password-less 'sudo' for all users in group 'sudo'
 RUN sed "s/^%sudo.*/%sudo\tALL=(ALL) NOPASSWD:ALL/g" -i /etc/sudoers && \
-    echo "vyos_bld\tALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
+    echo "ngnos_bld\tALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
     chmod a+s /usr/sbin/useradd /usr/sbin/groupadd
 
 # Ensure sure all users have access to our OCAM and Go installation

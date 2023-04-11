@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-USER_NAME="vyos_bld"
+USER_NAME="ngnos_bld"
 NEW_UID=$(stat -c "%u" .)
 NEW_GID=$(stat -c "%g" .)
 

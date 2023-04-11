@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# vyos policy agent for netplugd
+# ngnos policy agent for netplugd
 #
 
 dev="$1"
