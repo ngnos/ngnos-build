@@ -5596,7 +5596,6 @@ static inline void ipv6_store_devconf(struct ipv6_devconf *cnf,
 	array[DEVCONF_IOAM6_ID_WIDE] = cnf->ioam6_id_wide;
 	array[DEVCONF_NDISC_EVICT_NOCARRIER] = cnf->ndisc_evict_nocarrier;
 	array[DEVCONF_ACCEPT_UNTRACKED_NA] = cnf->accept_untracked_na;
-	array[DEVCONF_LINK_FILTER] = cnf->link_filter;
 }
 
 static inline size_t inet6_ifla6_size(void)
@@ -7021,13 +7020,6 @@ static const struct ctl_table addrconf_sysctl[] = {
 		.proc_handler	= proc_dou8vec_minmax,
 		.extra1		= (void *)SYSCTL_ZERO,
 		.extra2		= (void *)SYSCTL_ONE,
-	},
-	{
-		.procname	= "link_filter",
-		.data		= &ipv6_devconf.link_filter,
-		.maxlen		= sizeof(int),
-		.mode		= 0644,
-		.proc_handler	= proc_dointvec,
 	},
 	{
 		.procname	= "ioam6_id",

@@ -675,14 +675,6 @@ static inline void rt6_probe(struct fib6_nh *fib6_nh)
 }
 #endif
 
-static inline int rt6_link_filter(const struct fib6_nh *nh)
-{
-	const struct net_device *dev = nh->fib_nh_dev;
-	int linkf = __in6_dev_get(dev)->cnf.link_filter;
-	return (linkf && !netif_running(dev))
-		|| (linkf > 1 && !netif_carrier_ok(dev));
-}
-
 /*
  * Default Router Selection (RFC 2461 6.3.6)
  */
@@ -724,8 +716,6 @@ static int rt6_score_route(const struct fib6_nh *nh, u32 fib6_flags, int oif,
 
 	if (!m && (strict & RT6_LOOKUP_F_IFACE))
 		return RT6_NUD_FAIL_HARD;
-	if (rt6_link_filter(nh))
-		return -1;
 #ifdef CONFIG_IPV6_ROUTER_PREF
 	m |= IPV6_DECODE_PREF(IPV6_EXTRACT_PREF(fib6_flags)) << 2;
 #endif
