@@ -15,7 +15,6 @@
 #include <linux/seq_file.h>
 #include <linux/posix_acl_xattr.h>
 #include <linux/exportfs.h>
-#include <linux/inotify.h>
 #include <linux/file.h>
 #include "overlayfs.h"
 
@@ -2203,18 +2202,6 @@ static void ovl_inode_init_once(void *foo)
 	inode_init_once(&oi->vfs_inode);
 }
 
-static int ovl_inotify_path(struct path *dst, struct path *src)
-{
-	ovl_path_real(src->dentry, dst);
-	path_get(dst);
-	return 0;
-}
-
-static struct inotify_stackfs ovl_inotify = {
-	.fs_type	= &ovl_fs_type,
-	.func		= ovl_inotify_path,
-};
-
 static int __init ovl_init(void)
 {
 	int err;
@@ -2230,24 +2217,18 @@ static int __init ovl_init(void)
 	err = ovl_aio_request_cache_init();
 	if (!err) {
 		err = register_filesystem(&ovl_fs_type);
-		if (err)
-			goto err;
-		err = inotify_register_stackfs(&ovl_inotify);
-		if (err)
-			goto err;
-		return 0;
+		if (!err)
+			return 0;
 
+		ovl_aio_request_cache_destroy();
 	}
-err:
 	kmem_cache_destroy(ovl_inode_cachep);
-	unregister_filesystem(&ovl_fs_type);
-	ovl_aio_request_cache_destroy();
+
 	return err;
 }
 
 static void __exit ovl_exit(void)
 {
-	inotify_unregister_stackfs(&ovl_inotify);
 	unregister_filesystem(&ovl_fs_type);
 
 	/*

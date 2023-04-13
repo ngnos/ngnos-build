@@ -15,7 +15,6 @@
 
 #include <linux/file.h>
 #include <linux/fs.h> /* struct inode */
-#include <linux/mount.h>
 #include <linux/fsnotify_backend.h>
 #include <linux/idr.h>
 #include <linux/init.h> /* fs_initcall */
@@ -97,93 +96,6 @@ static void __init inotify_sysctls_init(void)
 #else
 #define inotify_sysctls_init() do { } while (0)
 #endif /* CONFIG_SYSCTL */
-
-#ifdef CONFIG_INOTIFY_STACKFS
-
-static DEFINE_RWLOCK(inotify_fs_lock);
-static LIST_HEAD(inotify_fs_list);
-
-static inline struct file_system_type* peek_fs_type(struct path *path)
-{
-	return path->mnt->mnt_sb->s_type;
-}
-
-static struct inotify_stackfs* inotify_get_stackfs(struct path *path)
-{
-	struct file_system_type *fs;
-	struct inotify_stackfs *fse, *ret = NULL;
-
-	fs = peek_fs_type(path);
-
-	read_lock(&inotify_fs_lock);
-	list_for_each_entry(fse, &inotify_fs_list, list) {
-	if (fse->fs_type == fs) {
-		ret = fse;
-		break;
-	}
-	}
-	read_unlock(&inotify_fs_lock);
-
-	return ret;
-}
-
-static inline void inotify_put_stackfs(struct inotify_stackfs *fs)
-{
-}
-
-int inotify_register_stackfs(struct inotify_stackfs *fs)
-{
-	int ret = 0;
-	struct inotify_stackfs *fse;
-
-	BUG_ON(IS_ERR_OR_NULL(fs->fs_type));
-	BUG_ON(IS_ERR_OR_NULL(fs->func));
-
-	INIT_LIST_HEAD(&fs->list);
-
-	write_lock(&inotify_fs_lock);
-	list_for_each_entry(fse, &inotify_fs_list, list) {
-		if (fse->fs_type == fs->fs_type) {
-			write_unlock(&inotify_fs_lock);
-			ret = -EBUSY;
-			goto out;
-		}
-	}
-	list_add_tail(&fs->list, &inotify_fs_list);
-	write_unlock(&inotify_fs_lock);
-
-out:
-	return ret;
-}
-EXPORT_SYMBOL_GPL(inotify_register_stackfs);
-
-void inotify_unregister_stackfs(struct inotify_stackfs *fs)
-{
-	struct inotify_stackfs *fse, *n;
-
-	write_lock(&inotify_fs_lock);
-	list_for_each_entry_safe(fse, n, &inotify_fs_list, list) {
-		if (fse == fs) {
-			list_del(&fse->list);
-			break;
-		}
-	}
-	write_unlock(&inotify_fs_lock);
-}
-EXPORT_SYMBOL_GPL(inotify_unregister_stackfs);
-
-#else
-
-static inline struct inotify_stackfs* inotify_get_stackfs(struct path *path)
-{
-	return NULL;
-}
-
-static inline void inotify_put_stackfs(struct inotify_stackfs *fs)
-{
-}
-
-#endif /* CONFIG_INOTIFY_STACKFS */
 
 static inline __u32 inotify_arg_to_mask(struct inode *inode, u32 arg)
 {
@@ -458,8 +370,8 @@ static const struct file_operations inotify_fops = {
 /*
  * find_inode - resolve a user-given path to a specific inode
  */
-static inline int __inotify_find_inode(const char __user *dirname, struct path *path,
-					unsigned int flags, __u64 mask)
+static int inotify_find_inode(const char __user *dirname, struct path *path,
+						unsigned int flags, __u64 mask)
 {
 	int error;
 
@@ -478,28 +390,6 @@ static inline int __inotify_find_inode(const char __user *dirname, struct path *
 		path_put(path);
 
 	return error;
-}
-
-static int inotify_find_inode(const char __user *dirname, struct path *path,
-					unsigned int flags, __u64 mask)
-{
-	int ret;
-	struct path tpath;
-	struct inotify_stackfs *fse;
-
-	ret = __inotify_find_inode(dirname, &tpath, flags, mask);
-	if (ret)
-		return ret;
-	fse = inotify_get_stackfs(&tpath);
-	if (fse == NULL) {
-		*path = tpath;
-		return 0;
-	}
-	ret = fse->func(path, &tpath);
-	inotify_put_stackfs(fse);
-	path_put(&tpath);
-
-	return ret;
 }
 
 static int inotify_add_to_idr(struct idr *idr, spinlock_t *idr_lock,
