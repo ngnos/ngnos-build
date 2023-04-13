@@ -8,7 +8,7 @@ kernel_flavor = "amd64-vyos"
 packages = [
   "grub2",
   "grub-pc",
-  "vyos-linux-firmware",
-  "vyos-intel-qat",
+  "ngnos-linux-firmware",
+  "ngnos-intel-qat",
   "telegraf"
 ]
