@@ -30,7 +30,7 @@ FW_FILES=$(find ${LINUX_SRC}/debian/linux-image/lib/modules/${KERNEL_VERSION}${K
 
 # Debian package will use the descriptive Git commit as version
 GIT_COMMIT=$(cd ${CWD}/${LINUX_FIRMWARE}; git describe --always)
-NGNOS_FIRMWARE_NAME="ngnos-linux-firmware"
+NGNOS_FIRMWARE_NAME="vyos-linux-firmware"
 NGNOS_FIRMWARE_DIR="${NGNOS_FIRMWARE_NAME}_${GIT_COMMIT}-0_all"
 if [ -d ${NGNOS_FIRMWARE_DIR} ]; then
     # remove Debian package folder and deb file from previous runs
