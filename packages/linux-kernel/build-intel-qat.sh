@@ -26,7 +26,7 @@ DRIVER_VERSION_EXTRA="-0"
 
 # Build up Debian related variables required for packaging
 DEBIAN_ARCH=$(dpkg --print-architecture)
-DEBIAN_DIR="${CWD}/ngnos-intel-${DRIVER_NAME}_${DRIVER_VERSION}${DRIVER_VERSION_EXTRA}_${DEBIAN_ARCH}"
+DEBIAN_DIR="${CWD}/vyos-intel-${DRIVER_NAME}_${DRIVER_VERSION}${DRIVER_VERSION_EXTRA}_${DEBIAN_ARCH}"
 DEBIAN_CONTROL="${DEBIAN_DIR}/DEBIAN/control"
 DEBIAN_POSTINST="${CWD}/ngnos-intel-qat.postinst"
 
@@ -90,7 +90,7 @@ find ${DEBIAN_DIR} -name "modules.*" | xargs rm -f
 echo "#!/bin/sh" > ${DEBIAN_POSTINST}
 echo "/sbin/depmod -a ${KERNEL_VERSION}${KERNEL_SUFFIX}" >> ${DEBIAN_POSTINST}
 
-fpm --input-type dir --output-type deb --name ngnos-intel-${DRIVER_NAME} \
+fpm --input-type dir --output-type deb --name vyos-intel-${DRIVER_NAME} \
     --version ${DRIVER_VERSION}${DRIVER_VERSION_EXTRA} --deb-compression gz \
     --maintainer "ngNOS Package Maintainers <maintainers@ngnos.com>" \
     --description "Vendor based driver for Intel ${DRIVER_NAME}" \
