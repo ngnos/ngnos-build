@@ -9,7 +9,7 @@ debian_security_mirror = "http://deb.debian.org/debian-security"
 
 debian_archive_areas = "main contrib non-free"
 
-ngnos_mirror = "http://dev.packages.ngnos.com/repositories/current"
+ngnos_mirror = "http://dev.packages.vyos.net/repositories/current"
 
 ngnos_branch = "current"
 release_train = "current"
