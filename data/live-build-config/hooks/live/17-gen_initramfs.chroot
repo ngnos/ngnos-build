@@ -22,4 +22,4 @@ echo "I: Executing update-initramfs -c -k 6.1.23-amd64-ngnos"
 
 update-initramfs -c -k 6.1.23-amd64-ngnos
 
-rm -rf /bboot/vmlinuz-6.1.23-amd64-vyos
+rm -rf /boot/vmlinuz-6.1.23-amd64-vyos
