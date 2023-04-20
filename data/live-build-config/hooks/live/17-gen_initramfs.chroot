@@ -18,6 +18,6 @@ fi
 
 kernel=`ls /boot | grep vmlinuz- | sed 's/vmlinuz-//g'`
 
-echo "I: Executing update-initramfs -c -k $kernel"
+echo "I: Executing update-initramfs -c -k 6.1.23-amd64-ngnos"
 
 update-initramfs -c -k $kernel
