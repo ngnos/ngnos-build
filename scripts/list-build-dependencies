@@ -79,11 +79,19 @@ echo ""
 
 GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
+echo $GIT_BRANCH
+
 # First we need to get ngnos-world so we know all individual packages for ngNOS
-curl -L https://github.com/ngnos/ngnos-world/raw/$GIT_BRANCH/debian/control \
+#curl -L https://github.com/ngnos/ngnos-world/raw/$GIT_BRANCH/debian/control \
+#  --output /tmp/ngnos-world.control --retry 100 --retry-delay 1 --silent
+#
+GITHUB_TOKEN="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"
+
+curl -X GET -H "Authorization: token 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" https://raw.githubusercontent.com/ngnos/ngnos-world/current/debian/control \
   --output /tmp/ngnos-world.control --retry 100 --retry-delay 1 --silent
 
 NGNOS_PACKAGES=$(get_runtime_depends /tmp/ngnos-world.control)
+echo $NGNOS_PACKAGES
 rm -f /tmp/ngnos-world.control
 for pkg in $NGNOS_PACKAGES
 do
