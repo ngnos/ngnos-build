@@ -3,8 +3,8 @@ system {
     login {
         user ngnos {
             authentication {
-                encrypted-password $6$/uZlvWu1xGqVHDFq$cuLuPAVzF6HJH1Db9XtO/L52jdsaiWuhufolPb58L5awHhbO3HZ2w4Ds9YIm3aLilIQVKpsS2UaulqUTKiyPq0
-                plaintext-password ""
+                encrypted-password 
+                plaintext-password "ngnos"
             }
         }
     }
@@ -21,7 +21,7 @@ system {
     ntp {
         server "time1.vyos.net"
         server "time2.vyos.net"
-        server "time3.ngnos.com"
+        server "time3.vyos.net"
     }
     console {
         device ttyS0 {

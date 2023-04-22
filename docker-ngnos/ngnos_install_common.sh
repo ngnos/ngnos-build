@@ -39,7 +39,7 @@ function prepare_apt() {
     if [[ "${RELEASE_TRAIN}" == "equuleus" || "${RELEASE_TRAIN}" == "sagitta" ]]; then
         echo -e "deb ${APT_NGNOS_MIRROR} ${APT_NGNOS_BRANCH} main\n${APT_ADDITIONAL_REPOS}" > /etc/apt/sources.list.d/ngnos.list
         # Add backports repository
-        echo -e "deb http://deb.debian.org/debian buster-backports main\ndeb http://deb.debian.org/debian buster-backports non-free non-free-firmware" >> /etc/apt/sources.list.d/ngnos.list
+        echo -e "deb http://deb.debian.org/debian buster-backports main\ndeb http://deb.debian.org/debian buster-backports non-free" >> /etc/apt/sources.list.d/ngnos.list
     fi
 
     # Copy additional repositories and preferences, if persented
