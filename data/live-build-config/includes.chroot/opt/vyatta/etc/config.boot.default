@@ -3,7 +3,6 @@ system {
     login {
         user ngnos {
             authentication {
-                encrypted-password 
                 plaintext-password "ngnos"
             }
         }
