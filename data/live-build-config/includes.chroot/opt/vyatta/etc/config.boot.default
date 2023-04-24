@@ -32,3 +32,8 @@ system {
         commit-revisions 100
     }
 }
+
+interfaces {
+    loopback lo {
+    }
+}
