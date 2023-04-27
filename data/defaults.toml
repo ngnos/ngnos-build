@@ -14,7 +14,7 @@ ngnos_mirror = "http://dev.packages.vyos.net/repositories/current"
 ngnos_branch = "current"
 release_train = "current"
 
-kernel_version = "6.1.23"
+kernel_version = "6.1.26"
 bootloaders = "syslinux,grub-efi"
 
 website_url = "https://ngnos.com"

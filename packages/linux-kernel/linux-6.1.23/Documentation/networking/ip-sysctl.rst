@@ -1592,17 +1592,6 @@ src_valid_mark - BOOLEAN
 
 	Default value is 0.
 
-link_filter - INTEGER
-	0 - Allow packets to be received for the address on this interface
-	    even if interface is disabled or no carrier.
-	1 - Ignore packets received if interface associated with the incoming
-	    address is down.
-	2 - Ignore packets received if interface associated with the incoming
-	    address is down or has no carrier.
-
-	Default value is 0. Note that some distributions enable it
-	in startup scripts.
-
 arp_filter - BOOLEAN
 	- 1 - Allows you to have multiple network interfaces on the same
 	  subnet, and have the ARPs for each interface be answered

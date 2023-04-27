@@ -83,7 +83,6 @@ struct ipv6_devconf {
 	__u8		ndisc_evict_nocarrier;
 
 	struct ctl_table_header *sysctl_header;
-	__s32           link_filter;
 };
 
 struct ipv6_params {
