@@ -23,7 +23,7 @@ if [ -d $PATCH_DIR ]; then
         if [ -z "$(git config --list | grep -e user.name -e user.email)" ]; then
             # if git user.name and user.email is not set, -c sets temorary user.name and
             # user.email variables as these is not set in the build container by default.
-            OPTS="-c user.name=ngNOS-CI -c user.email=maintainers@ngnos.com"
+            OPTS="-c user.name=boxsocadmin -c user.email=f1@clyst.it"
         fi
         git $OPTS am --committer-date-is-author-date ${PATCH_DIR}/${patch}
     done
