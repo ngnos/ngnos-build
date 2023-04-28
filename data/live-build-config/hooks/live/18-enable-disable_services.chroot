@@ -71,6 +71,7 @@ systemctl enable ssh-session-cleanup.service
 systemctl enable ngnos-hostsd.service
 systemctl enable acpid.service
 systemctl enable ngnos-configd.service
+systemctl enable ngnos-interface-monitor.service
 
 echo I: Masking services
 systemctl mask systemd-journald-audit.socket
